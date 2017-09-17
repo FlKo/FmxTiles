@@ -1,0 +1,11 @@
+# C++Builder files
+*.pch
+*.obj
+*.#*
+*.cbproj.local
+*.stat
+*.res
+
+# C++Builder directories
+__astcache/
+__history/
