@@ -69,8 +69,8 @@ TStage::TStage(
         FCanvasHeight(CanvasHeight),
         FScrollBorderWidth(ScrollBorderWidth),
         FScrollSpeed(ScrollSpeed),
-	    FBlinkerOpacity(1.0),
-	    FBlinkerCountDown(false),
+        FBlinkerOpacity(1.0),
+        FBlinkerCountDown(false),
         FFPS(0.0),
         FFPSCycle(0),
         FFPSTimer(0.0),
@@ -81,7 +81,7 @@ TStage::TStage(
         FSfxMusicPlayer(new TMediaPlayer(NULL))
 {
     // Set the camera pos to center
-	FCameraPos = TPointF(FCanvasWidth / 2.0, FCanvasHeight / 4.0);
+    FCameraPos = TPointF(FCanvasWidth / 2.0, FCanvasHeight / 4.0);
 
     // Set the GUI main interface
     FGuiMainInterface = FGuiElementStack[L"00000"];
@@ -109,7 +109,7 @@ void TStage::EndScene()
 void TStage::ProcessUserInput(float Delta, float Absolute)
 {
     // Check if mouse is within the stage range
-	if (!FMouseOptions.InStage)
+    if (!FMouseOptions.InStage)
         return;
 
     // Calculate the stage's rect
@@ -117,20 +117,20 @@ void TStage::ProcessUserInput(float Delta, float Absolute)
 
     // Abbreviate some variable names needed for the next calculations
     int WD  = FCanvasWidth;
-    int HG	= FCanvasHeight;
-    int BW	= FScrollBorderWidth;
+    int HG  = FCanvasHeight;
+    int BW  = FScrollBorderWidth;
 
     // Calculate the scroll area rects
-    TRect RLeft 	= TRect(0, 0, BW, HG);
-    TRect RTop		= TRect(0, 0, WD, BW);
-    TRect RRight	= TRect(WD - BW, 0, WD, HG);
-    TRect RBottom	= TRect(0, HG - BW, WD, HG);
+    TRect RLeft     = TRect(0, 0, BW, HG);
+    TRect RTop      = TRect(0, 0, WD, BW);
+    TRect RRight    = TRect(WD - BW, 0, WD, HG);
+    TRect RBottom   = TRect(0, HG - BW, WD, HG);
 
     // Set the correct flags when the mouse cursor is within a scroll area
-    bool MouseInLeftScrollArea 		= PtInRect(RLeft, FMouseOptions.Pos);
-    bool MouseInTopScrollArea 		= PtInRect(RTop, FMouseOptions.Pos);
-    bool MouseInRightScrollArea 	= PtInRect(RRight, FMouseOptions.Pos);
-    bool MouseInBottomScrollArea 	= PtInRect(RBottom, FMouseOptions.Pos);
+    bool MouseInLeftScrollArea      = PtInRect(RLeft, FMouseOptions.Pos);
+    bool MouseInTopScrollArea       = PtInRect(RTop, FMouseOptions.Pos);
+    bool MouseInRightScrollArea     = PtInRect(RRight, FMouseOptions.Pos);
+    bool MouseInBottomScrollArea    = PtInRect(RBottom, FMouseOptions.Pos);
 
     // Calculate the new camera position if we have a mouse scroll
     if (MouseInLeftScrollArea)
@@ -182,35 +182,35 @@ void TStage::Clear()
 void TStage::DrawTiles(float Delta, float Absolute)
 {
     // If FPS timer has expired...
-	if (FFPSTimer >= 1.0)
-	{
+    if (FFPSTimer >= 1.0)
+    {
         // ...reset FPS counting
-		FFPSTimer   = 0;
-		FFPS        = FFPSCycle;
-		FFPSCycle   = 0.0;
-	}
+        FFPSTimer   = 0;
+        FFPS        = FFPSCycle;
+        FFPSCycle   = 0.0;
+    }
 
-	FFPSTimer += Delta;
-	++FFPSCycle;
+    FFPSTimer += Delta;
+    ++FFPSCycle;
 
-	if (!FBlinkerCountDown)
-	{
-		FBlinkerOpacity += Delta;
-		FBlinkerCountDown = FBlinkerOpacity >= 0.9 ? true : false;
-	}
-	else
-	{
-		FBlinkerOpacity -= Delta;
-		FBlinkerCountDown = FBlinkerOpacity <= 0.7 ? false : true;
-	}
+    if (!FBlinkerCountDown)
+    {
+        FBlinkerOpacity += Delta;
+        FBlinkerCountDown = FBlinkerOpacity >= 0.9 ? true : false;
+    }
+    else
+    {
+        FBlinkerOpacity -= Delta;
+        FBlinkerCountDown = FBlinkerOpacity <= 0.7 ? false : true;
+    }
 
     for (std::size_t z = 0; z < FTileMap.SizeZ; ++z)
-	{
-		for (std::size_t y = 0; y < FTileMap.SizeY; ++y)
-		{
-			for (std::size_t x = 0; x < FTileMap.SizeX; ++x)
-			{
-				TTile& CurrentTile = FTileMap.Tiles[x][y][z];
+    {
+        for (std::size_t y = 0; y < FTileMap.SizeY; ++y)
+        {
+            for (std::size_t x = 0; x < FTileMap.SizeX; ++x)
+            {
+                TTile& CurrentTile = FTileMap.Tiles[x][y][z];
 
                 TPoint DrawPos =
                     GetDrawPos(
@@ -251,9 +251,9 @@ void TStage::DrawTiles(float Delta, float Absolute)
                             );
                     }
                 }
-			}
-		}
-	}
+            }
+        }
+    }
 }
 //---------------------------------------------------------------------------
 
@@ -267,7 +267,7 @@ void TStage::DrawGui(float Delta, float Absolute)
 {
     DrawBitmap(0.0, 0.0, 1.0, FGuiMainInterface->Bitmap.get());
 
-	TextOut(
+    TextOut(
         128,
         43,
         String().sprintf(L"%.2f fps", FFPS),
@@ -341,27 +341,27 @@ void TStage::HandleMouseMove(float MousePosX, float MousePosY)
 
 void TStage::HandleMouseDown(TMouseButton Button)
 {
-	switch (Button)
-	{
-		case TMouseButton::mbLeft:		FMouseOptions.ClickLeft     = true;		break;
-		case TMouseButton::mbRight:		FMouseOptions.ClickRight    = true;   	break;
-	}
+    switch (Button)
+    {
+        case TMouseButton::mbLeft:      FMouseOptions.ClickLeft     = true;     break;
+        case TMouseButton::mbRight:     FMouseOptions.ClickRight    = true;     break;
+    }
 }
 //---------------------------------------------------------------------------
 
 void TStage::HandleMouseUp(TMouseButton Button)
 {
-	switch (Button)
-	{
-		case TMouseButton::mbLeft:		FMouseOptions.ClickLeft     = false;	break;
-		case TMouseButton::mbRight:		FMouseOptions.ClickRight    = false;  	break;
-	}
+    switch (Button)
+    {
+        case TMouseButton::mbLeft:      FMouseOptions.ClickLeft     = false;    break;
+        case TMouseButton::mbRight:     FMouseOptions.ClickRight    = false;    break;
+    }
 }
 //---------------------------------------------------------------------------
 
 void TStage::HandleMouseEnter()
 {
-	FMouseOptions.InStage = true;
+    FMouseOptions.InStage = true;
 }
 //---------------------------------------------------------------------------
 
@@ -373,10 +373,10 @@ void TStage::HandleMouseLeave()
 
 void TStage::DrawBitmap(int X, int Y, float Opacity, TBitmap* Bitmap)
 {
-	TRectF SourceRect 	= RectF(0, 0, Bitmap->Width, Bitmap->Height);
-	TRectF DestRect		= RectF(X, Y, Bitmap->Width + X, Bitmap->Height + Y);
+    TRectF SourceRect   = RectF(0, 0, Bitmap->Width, Bitmap->Height);
+    TRectF DestRect     = RectF(X, Y, Bitmap->Width + X, Bitmap->Height + Y);
 
-	FCanvas->DrawBitmap(Bitmap, SourceRect, DestRect, Opacity, true);
+    FCanvas->DrawBitmap(Bitmap, SourceRect, DestRect, Opacity, true);
 }
 //---------------------------------------------------------------------------
 
@@ -385,7 +385,7 @@ TPoint TStage::GetMapTileCoord(
     TPointF CameraPos
     )
 {
-	TPoint RetVal;
+    TPoint RetVal;
 
     RetVal.x =
         ((ScreenPos.x - CameraPos.x) / (FTileMap.TileWidth/2)
@@ -395,7 +395,7 @@ TPoint TStage::GetMapTileCoord(
         ((ScreenPos.y - CameraPos.y) / (FTileMap.TileHeight/2)
             - ((ScreenPos.x - CameraPos.x) / (FTileMap.TileWidth/2))) / 2;
 
-	return RetVal;
+    return RetVal;
 }
 //---------------------------------------------------------------------------
 
@@ -409,7 +409,7 @@ TPoint TStage::GetDrawPos(
     int TileImgHeight
     )
 {
-	TPoint RetVal;
+    TPoint RetVal;
 
     RetVal.x =
         CameraPosX
@@ -423,7 +423,7 @@ TPoint TStage::GetDrawPos(
             + ((TileNoX + TileNoY) * FTileMap.TileHeight/2)
             - (TileNoZ*FTileMap.TileHeight);
 
-	return RetVal;
+    return RetVal;
 }
 //---------------------------------------------------------------------------
 
@@ -438,18 +438,18 @@ void TStage::TextOut(
     TAlphaColor ShadowColor
     )
 {
-	TBrushKind FillKindBackup  	= FCanvas->Fill->Kind;
-	TAlphaColor FillColorBackup	= FCanvas->Fill->Color;
-	float FontSizeBackup	   	= FCanvas->Font->Size;
-	String FontFamilyBackup	   	= FCanvas->Font->Family;
+    TBrushKind FillKindBackup   = FCanvas->Fill->Kind;
+    TAlphaColor FillColorBackup = FCanvas->Fill->Color;
+    float FontSizeBackup        = FCanvas->Font->Size;
+    String FontFamilyBackup     = FCanvas->Font->Family;
 
-	FCanvas->Fill->Kind   	= TBrushKind::Solid;
+    FCanvas->Fill->Kind     = TBrushKind::Solid;
 
-	FCanvas->Font->Size		= Size72DPI * 96 / 72;
-	FCanvas->Font->Family	= Font;
+    FCanvas->Font->Size     = Size72DPI * 96 / 72;
+    FCanvas->Font->Family   = Font;
 
-	float TextWidth		= FCanvas->TextWidth(Text);
-	float TextHeight	= FCanvas->TextHeight(Text);
+    float TextWidth     = FCanvas->TextWidth(Text);
+    float TextHeight    = FCanvas->TextHeight(Text);
 
     if (Shadow)
     {
@@ -467,9 +467,9 @@ void TStage::TextOut(
             );
     }
 
-	FCanvas->Fill->Color = Color;
+    FCanvas->Fill->Color = Color;
 
-	FCanvas->FillText(
+    FCanvas->FillText(
         RectF(X, Y, X+TextWidth, Y+TextHeight),
         Text,
         false,
@@ -479,21 +479,21 @@ void TStage::TextOut(
         TTextAlign::Leading
         );
 
-	FCanvas->Fill->Kind		= FillKindBackup;
-	FCanvas->Fill->Color	= FillColorBackup;
-	FCanvas->Font->Size		= FontSizeBackup;
-	FCanvas->Font->Family  	= FontFamilyBackup;
+    FCanvas->Fill->Kind     = FillKindBackup;
+    FCanvas->Fill->Color    = FillColorBackup;
+    FCanvas->Font->Size     = FontSizeBackup;
+    FCanvas->Font->Family   = FontFamilyBackup;
 }
 //---------------------------------------------------------------------------
 
 void TStage::FillRect(const TRect& Rect, TAlphaColor Color)
 {
-	TRectF LRectF = RectF(Rect.left, Rect.top, Rect.right, Rect.bottom);
+    TRectF LRectF = RectF(Rect.left, Rect.top, Rect.right, Rect.bottom);
 
-	FCanvas->Fill->Color = Color;
+    FCanvas->Fill->Color = Color;
 
-	InflateRect(LRectF, -(FCanvas->Stroke->Thickness / 2), -(FCanvas->Stroke->Thickness / 2));
-	FCanvas->FillRect(LRectF, 0, 0, AllCorners, 1.0);
+    InflateRect(LRectF, -(FCanvas->Stroke->Thickness / 2), -(FCanvas->Stroke->Thickness / 2));
+    FCanvas->FillRect(LRectF, 0, 0, AllCorners, 1.0);
 }
 //---------------------------------------------------------------------------
 

@@ -50,7 +50,7 @@ TMasterTile::TMasterTile(const String& FilePath)
     :   FBitmap(new TBitmap)
 {
     // Check of the image file exists
-	if (!FileExists(FilePath))
+    if (!FileExists(FilePath))
         throw Exception(L"Tile image '" + FilePath + L"' does not exist");
 
     // Load the image

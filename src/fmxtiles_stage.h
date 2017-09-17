@@ -175,12 +175,12 @@ private:
 
     TMouseOptions   FMouseOptions;
 
-	float           FFPS;
-	int             FFPSCycle;
+    float           FFPS;
+    int             FFPSCycle;
     float           FFPSTimer;
 
-	float 	        FBlinkerOpacity;
-	bool 	        FBlinkerCountDown;
+    float           FBlinkerOpacity;
+    bool            FBlinkerCountDown;
 
     TSfxOptions     FSfxOptions;
 

@@ -72,13 +72,13 @@ void TMasterTileStack::LoadFromFolder(const String& StorageFolder, bool ProcessP
 {
     const String &Path = IncludeTrailingPathDelimiter(StorageFolder);
 
-	TSearchRec SR;
+    TSearchRec SR;
 
     // Iterate over all files in the storage directory
-	if (FindFirst(Path + L"*.*", faAnyFile, SR) == 0)
-	{
-		do
-		{
+    if (FindFirst(Path + L"*.*", faAnyFile, SR) == 0)
+    {
+        do
+    {
             const String &FullPath  = Path + SR.Name;
 
             if ((SR.Name == L".") || (SR.Name == L".."))
@@ -131,10 +131,10 @@ void TMasterTileStack::LoadFromFolder(const String& StorageFolder, bool ProcessP
                         TDirectory::Delete(TempFolderPath);
                 }
             }
-		} while (FindNext(SR) == 0);
+        } while (FindNext(SR) == 0);
 
-		FindClose(SR);
-	}
+        FindClose(SR);
+    }
 }
 //---------------------------------------------------------------------------
 
