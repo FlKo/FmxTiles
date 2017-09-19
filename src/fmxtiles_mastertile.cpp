@@ -49,7 +49,7 @@ using Fmx::Graphics::TBitmap;
 TMasterTile::TMasterTile(const String& FilePath)
     :   FBitmap(new TBitmap)
 {
-    // Check of the image file exists
+    // Check whether the image file exists
     if (!FileExists(FilePath))
         throw Exception(L"Tile image '" + FilePath + L"' does not exist");
 
