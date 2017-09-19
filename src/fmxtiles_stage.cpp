@@ -116,21 +116,21 @@ void TStage::ProcessUserInput(float Delta, float Absolute)
     TRect RC = TRect(0, 0, FCanvasWidth, FCanvasHeight);
 
     // Abbreviate some variable names needed for the next calculations
-    int WD  = FCanvasWidth;
-    int HG  = FCanvasHeight;
-    int BW  = FScrollBorderWidth;
+    const float &WD  = FCanvasWidth;
+    const float &HG  = FCanvasHeight;
+    const float &BW  = FScrollBorderWidth;
 
     // Calculate the scroll area rects
-    TRect RLeft     = TRect(0, 0, BW, HG);
-    TRect RTop      = TRect(0, 0, WD, BW);
-    TRect RRight    = TRect(WD - BW, 0, WD, HG);
-    TRect RBottom   = TRect(0, HG - BW, WD, HG);
+    const TRectF RLeft(0.0, 0.0, BW, HG);
+    const TRectF RTop(0.0, 0.0, WD, BW);
+    const TRectF RRight(WD - BW, 0.0, WD, HG);
+    const TRectF RBottom(0.0, HG - BW, WD, HG);
 
     // Set the correct flags when the mouse cursor is within a scroll area
-    bool MouseInLeftScrollArea      = PtInRect(RLeft, FMouseOptions.Pos);
-    bool MouseInTopScrollArea       = PtInRect(RTop, FMouseOptions.Pos);
-    bool MouseInRightScrollArea     = PtInRect(RRight, FMouseOptions.Pos);
-    bool MouseInBottomScrollArea    = PtInRect(RBottom, FMouseOptions.Pos);
+    const bool MouseInLeftScrollArea      = PtInRect(RLeft, FMouseOptions.Pos);
+    const bool MouseInTopScrollArea       = PtInRect(RTop, FMouseOptions.Pos);
+    const bool MouseInRightScrollArea     = PtInRect(RRight, FMouseOptions.Pos);
+    const bool MouseInBottomScrollArea    = PtInRect(RBottom, FMouseOptions.Pos);
 
     // Calculate the new camera position if we have a mouse scroll
     if (MouseInLeftScrollArea)
@@ -486,14 +486,12 @@ void TStage::TextOut(
 }
 //---------------------------------------------------------------------------
 
-void TStage::FillRect(const TRect& Rect, TAlphaColor Color)
+void TStage::FillRect(const TRectF& Rect, TAlphaColor Color)
 {
-    TRectF LRectF = RectF(Rect.left, Rect.top, Rect.right, Rect.bottom);
-
     FCanvas->Fill->Color = Color;
 
-    InflateRect(LRectF, -(FCanvas->Stroke->Thickness / 2), -(FCanvas->Stroke->Thickness / 2));
-    FCanvas->FillRect(LRectF, 0, 0, AllCorners, 1.0);
+    //InflateRect(Rect, -(FCanvas->Stroke->Thickness / 2), -(FCanvas->Stroke->Thickness / 2));
+    FCanvas->FillRect(Rect, 0.0, 0.0, AllCorners, 1.0);
 }
 //---------------------------------------------------------------------------
 

@@ -150,7 +150,7 @@ private:
         TAlphaColor ShadowColor=claBlack
         );
 
-    void FillRect(const TRect& Rect, TAlphaColor Color);
+    void FillRect(const TRectF& Rect, TAlphaColor Color);
 
     __int64 GetRandomPosition(__int64 Duration);
 
