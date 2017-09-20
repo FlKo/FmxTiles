@@ -72,7 +72,7 @@ TStage::TStage(
         FBlinkerOpacity(1.0),
         FBlinkerCountDown(false),
         FFPS(0.0),
-        FFPSCycle(0),
+        FFPSCycle(0.0),
         FFPSTimer(0.0),
         FMasterTileStack(TileStorageDir, true),
         FGuiElementStack(GuiElementsDir, true),
@@ -106,10 +106,10 @@ void TStage::EndScene()
 }
 //---------------------------------------------------------------------------
 
-void TStage::ProcessUserInput(float Delta, float Absolute)
+void TStage::ProcessUserInputDesktop(float Delta, float Absolute)
 {
     // Check if mouse is within the stage range
-    if (!FMouseOptions.InStage)
+    if (!FDesktopInputOptions.InStage)
         return;
 
     // Calculate the stage's rect
@@ -127,10 +127,10 @@ void TStage::ProcessUserInput(float Delta, float Absolute)
     const TRectF RBottom(0.0, HG - BW, WD, HG);
 
     // Set the correct flags when the mouse cursor is within a scroll area
-    const bool MouseInLeftScrollArea      = PtInRect(RLeft, FMouseOptions.Pos);
-    const bool MouseInTopScrollArea       = PtInRect(RTop, FMouseOptions.Pos);
-    const bool MouseInRightScrollArea     = PtInRect(RRight, FMouseOptions.Pos);
-    const bool MouseInBottomScrollArea    = PtInRect(RBottom, FMouseOptions.Pos);
+    const bool MouseInLeftScrollArea      = PtInRect(RLeft, FDesktopInputOptions.MousePos);
+    const bool MouseInTopScrollArea       = PtInRect(RTop, FDesktopInputOptions.MousePos);
+    const bool MouseInRightScrollArea     = PtInRect(RRight, FDesktopInputOptions.MousePos);
+    const bool MouseInBottomScrollArea    = PtInRect(RBottom, FDesktopInputOptions.MousePos);
 
     // Calculate the new camera position if we have a mouse scroll
     if (MouseInLeftScrollArea)
@@ -143,27 +143,39 @@ void TStage::ProcessUserInput(float Delta, float Absolute)
         FCameraPos.y -= FScrollSpeed * Delta;
 
     // Get the current tile coordinate below the mouse cursor
-    FMouseOptions.TileNo = GetMapTileCoord(FMouseOptions.Pos, FCameraPos);
+    FDesktopInputOptions.TileNo = GetMapTileCoord(FDesktopInputOptions.MousePos, FCameraPos);
 
     if (
-        (FMouseOptions.TileNo.x < 0)
-            || (FMouseOptions.TileNo.y < 0)
-            || (FMouseOptions.TileNo.x >= static_cast<long>(FTileMap.SizeX))
-            || (FMouseOptions.TileNo.y >= static_cast<long>(FTileMap.SizeY))
+        (FDesktopInputOptions.TileNo.x < 0)
+            || (FDesktopInputOptions.TileNo.y < 0)
+            || (FDesktopInputOptions.TileNo.x >= static_cast<long>(FTileMap.SizeX))
+            || (FDesktopInputOptions.TileNo.y >= static_cast<long>(FTileMap.SizeY))
             )
     {
         return;
     }
 
-    TTile& CurrentTile = FTileMap.Tiles[FMouseOptions.TileNo.x][FMouseOptions.TileNo.y][0];
+    TTile& CurrentTile =
+        FTileMap.Tiles[FDesktopInputOptions.TileNo.x][FDesktopInputOptions.TileNo.y][0];
 
     // If we have a left mouse click...
-    if (FMouseOptions.ClickLeft)
+    if (FDesktopInputOptions.MouseClickLeft)
         CurrentTile.IsSelected = true;
 
     // If we have a right mouse click...
-    if (FMouseOptions.ClickRight)
+    if (FDesktopInputOptions.MouseClickRight)
         CurrentTile.IsSelected = false;
+}
+//---------------------------------------------------------------------------
+
+void TStage::ProcessUserInputMobile(float Delta, float Absolute)
+{
+    if (FMobileInputOptions.IsPanning)
+    {
+        // Calculate the new camera position
+        FCameraPos.x += FMobileInputOptions.Pos.x - FMobileInputOptions.LastPos.x;
+        FCameraPos.y += FMobileInputOptions.Pos.y - FMobileInputOptions.LastPos.y;
+    }
 }
 //---------------------------------------------------------------------------
 
@@ -185,7 +197,7 @@ void TStage::DrawTiles(float Delta, float Absolute)
     if (FFPSTimer >= 1.0)
     {
         // ...reset FPS counting
-        FFPSTimer   = 0;
+        FFPSTimer   = 0.0;
         FFPS        = FFPSCycle;
         FFPSCycle   = 0.0;
     }
@@ -241,7 +253,7 @@ void TStage::DrawTiles(float Delta, float Absolute)
                         CurrentTile.MasterTile->Bitmap.get()
                         );
 
-                    if (FMouseOptions.TileNo == TPoint(x, y))
+                    if (FDesktopInputOptions.TileNo == TPoint(x, y))
                     {
                         DrawBitmap(
                             DrawPos.x,
@@ -268,9 +280,17 @@ void TStage::DrawGui(float Delta, float Absolute)
     DrawBitmap(0.0, 0.0, 1.0, FGuiMainInterface->Bitmap.get());
 
     TextOut(
-        128,
+        90,
         43,
-        String().sprintf(L"%.2f fps", FFPS),
+        String().sprintf(
+            L"%.2f fps  -  %s",
+            FFPS,
+#ifdef _MOBILE_PLATFORM
+            L"Mobile"
+#else
+            L"Desktop"
+#endif
+            ),
         "Goudy Old Style",
         15,
         0xFF815122,
@@ -333,9 +353,47 @@ void TStage::ManageSfx(float Delta, float Absolute)
 }
 //---------------------------------------------------------------------------
 
+void TStage::HandlePanBegin(const TPointF& Location)
+{
+    FMobileInputOptions.IsPanning   = true;
+    FMobileInputOptions.Pos         = Location;
+    FMobileInputOptions.LastPos     = Location;
+}
+//---------------------------------------------------------------------------
+
+void TStage::HandlePanInertia(const TPointF& Location)
+{
+    if (FMobileInputOptions.IsPanning)
+    {
+        FMobileInputOptions.LastPos = FMobileInputOptions.Pos;
+        FMobileInputOptions.Pos     = Location;
+    }
+}
+//---------------------------------------------------------------------------
+
+void TStage::HandlePanEnd(const TPointF& Location)
+{
+    FMobileInputOptions.IsPanning   = false;
+    FMobileInputOptions.LastPos     = FMobileInputOptions.Pos;
+    FMobileInputOptions.Pos         = Location;
+}
+//---------------------------------------------------------------------------
+
+void TStage::HandlePressAndTap(const TPointF& Location)
+{
+
+}
+//---------------------------------------------------------------------------
+
+void TStage::HandleLongTap(const TPointF& Location)
+{
+
+}
+//---------------------------------------------------------------------------
+
 void TStage::HandleMouseMove(float MousePosX, float MousePosY)
 {
-    FMouseOptions.Pos = TPoint(MousePosX, MousePosY);
+    FDesktopInputOptions.MousePos = TPoint(MousePosX, MousePosY);
 }
 //---------------------------------------------------------------------------
 
@@ -343,8 +401,8 @@ void TStage::HandleMouseDown(TMouseButton Button)
 {
     switch (Button)
     {
-        case TMouseButton::mbLeft:      FMouseOptions.ClickLeft     = true;     break;
-        case TMouseButton::mbRight:     FMouseOptions.ClickRight    = true;     break;
+        case TMouseButton::mbLeft:      FDesktopInputOptions.MouseClickLeft     = true;     break;
+        case TMouseButton::mbRight:     FDesktopInputOptions.MouseClickRight    = true;     break;
     }
 }
 //---------------------------------------------------------------------------
@@ -353,27 +411,27 @@ void TStage::HandleMouseUp(TMouseButton Button)
 {
     switch (Button)
     {
-        case TMouseButton::mbLeft:      FMouseOptions.ClickLeft     = false;    break;
-        case TMouseButton::mbRight:     FMouseOptions.ClickRight    = false;    break;
+        case TMouseButton::mbLeft:      FDesktopInputOptions.MouseClickLeft     = false;    break;
+        case TMouseButton::mbRight:     FDesktopInputOptions.MouseClickRight    = false;    break;
     }
 }
 //---------------------------------------------------------------------------
 
 void TStage::HandleMouseEnter()
 {
-    FMouseOptions.InStage = true;
+    FDesktopInputOptions.InStage = true;
 }
 //---------------------------------------------------------------------------
 
 void TStage::HandleMouseLeave()
 {
-    FMouseOptions.InStage = false;
+    FDesktopInputOptions.InStage = false;
 }
 //---------------------------------------------------------------------------
 
 void TStage::DrawBitmap(int X, int Y, float Opacity, TBitmap* Bitmap)
 {
-    TRectF SourceRect   = RectF(0, 0, Bitmap->Width, Bitmap->Height);
+    TRectF SourceRect   = RectF(0.0, 0.0, Bitmap->Width, Bitmap->Height);
     TRectF DestRect     = RectF(X, Y, Bitmap->Width + X, Bitmap->Height + Y);
 
     FCanvas->DrawBitmap(Bitmap, SourceRect, DestRect, Opacity, true);

@@ -103,7 +103,11 @@ void __fastcall TLoopSync::ProcessAnimation()
     GetTimeValues(Delta, Absolute);
 
     // Process the user input
-    FStage.ProcessUserInput(Delta, Absolute);
+#ifdef _MOBILE_PLATFORM
+    FStage.ProcessUserInputMobile(Delta, Absolute);
+#else
+    FStage.ProcessUserInputDesktop(Delta, Absolute);
+#endif
 
     // Process events
     FStage.ProcessEvents(Delta, Absolute);

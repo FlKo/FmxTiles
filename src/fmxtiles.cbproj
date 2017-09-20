@@ -132,6 +132,7 @@
         <LinkPackageImports>rtl.bpi;fmx.bpi</LinkPackageImports>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
+        <BCC_UserSuppliedOptions>-D_MOBILE_PLATFORM</BCC_UserSuppliedOptions>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>

@@ -30,6 +30,7 @@
 #include <tchar.h>
 #endif
 #pragma hdrstop
+
 #include <System.StartUpCopy.hpp>
 //---------------------------------------------------------------------------
 USEFORM("fmxtiles_mainform.cpp", MainForm);

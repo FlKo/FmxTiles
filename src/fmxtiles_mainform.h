@@ -37,6 +37,7 @@
 #include <FMX.Types.hpp>
 #include <FMX.Objects.hpp>
 #include <FMX.Ani.hpp>
+#include <FMX.Gestures.hpp>
 
 #include "fmxtiles_stage.h"
 #include "fmxtiles_loopsync.h"
@@ -46,6 +47,7 @@ class TMainForm : public TForm
 {
 __published:
     TPaintBox *pbStage;
+    TGestureManager *gmStage;
     void __fastcall pbStageMouseMove(TObject *Sender, TShiftState Shift, float X, float Y);
     void __fastcall pbStageMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift, float X,
           float Y);
@@ -53,13 +55,20 @@ __published:
           float Y);
     void __fastcall pbStageMouseEnter(TObject *Sender);
     void __fastcall pbStageMouseLeave(TObject *Sender);
+    void __fastcall pbStageGesture(TObject *Sender, const TGestureEventInfo &EventInfo, bool &Handled);
+    void __fastcall FormKeyDown(TObject *Sender, WORD &Key, System::WideChar &KeyChar, TShiftState Shift);
+    void __fastcall FormKeyUp(TObject *Sender, WORD &Key, System::WideChar &KeyChar, TShiftState Shift);
 
 public:
     __fastcall TMainForm(TComponent* Owner);
 
 private:
-    Fmxtiles::TStage       FStage;
-    Fmxtiles::TLoopSync    *FLoopSync;
+    Fmxtiles::TStage        FStage;
+    Fmxtiles::TLoopSync     *FLoopSync;
+
+#ifdef _DEBUG
+    bool                    FIsPanning;
+#endif
 };
 //---------------------------------------------------------------------------
 

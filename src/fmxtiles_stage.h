@@ -52,23 +52,38 @@ using boost::shared_ptr;
 #endif
 //---------------------------------------------------------------------------
 
-struct TMouseOptions
+struct TDesktopInputOptions
 {
-    TMouseOptions()
+    TDesktopInputOptions()
         :   TileNo(TPoint(0, 0)),
-            ClickLeft(false),
-            ClickRight(false),
+            MouseClickLeft(false),
+            MouseClickRight(false),
             InStage(false),
-            Pos(TPoint(0, 0))
+            MousePos(TPoint(0, 0))
     {}
 
     TPoint  TileNo;
 
-    bool    ClickLeft;
-    bool    ClickRight;
+    bool    MouseClickLeft;
+    bool    MouseClickRight;
 
     bool    InStage;
-    TPoint  Pos;
+    TPoint  MousePos;
+};
+//---------------------------------------------------------------------------
+
+struct TMobileInputOptions
+{
+    TMobileInputOptions()
+        :   Pos(TPointF(0.0, 0.0)),
+            LastPos(TPointF(0.0, 0.0)),
+            IsPanning(false)
+    {}
+
+    TPointF Pos;
+    TPointF LastPos;
+
+    bool    IsPanning;
 };
 //---------------------------------------------------------------------------
 
@@ -110,7 +125,9 @@ public:
     void    BeginScene();
     void    EndScene();
 
-    void    ProcessUserInput(float Delta, float Absolute);
+    void    ProcessUserInputDesktop(float Delta, float Absolute);
+    void    ProcessUserInputMobile(float Delta, float Absolute);
+
     void    ProcessEvents(float Delta, float Absolute);
     void    Clear();
     void    DrawTiles(float Delta, float Absolute);
@@ -118,6 +135,13 @@ public:
     void    DrawGui(float Delta, float Absolute);
 
     void    ManageSfx(float Delta, float Absolute);
+
+    void    HandlePanBegin(const TPointF& Location);
+    void    HandlePanInertia(const TPointF& Location);
+    void    HandlePanEnd(const TPointF& Location);
+
+    void    HandlePressAndTap(const TPointF& Location);
+    void    HandleLongTap(const TPointF& Location);
 
     void    HandleMouseMove(float MousePosX, float MousePosY);
     void    HandleMouseDown(TMouseButton Button);
@@ -172,7 +196,8 @@ private:
 
     TPointF         FCameraPos;
 
-    TMouseOptions   FMouseOptions;
+    TDesktopInputOptions    FDesktopInputOptions;
+    TMobileInputOptions     FMobileInputOptions;
 
     float           FFPS;
     int             FFPSCycle;

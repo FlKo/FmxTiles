@@ -58,6 +58,9 @@ __fastcall TMainForm::TMainForm(TComponent* Owner)
             ),
         // Create the loop sync
         FLoopSync(new TLoopSync(this, FStage))
+#ifdef _DEBUG
+        ,FIsPanning(false)
+#endif
 {
     // Set the loop sync's parameters
     FLoopSync->Loop     = true;
@@ -112,4 +115,112 @@ void __fastcall TMainForm::pbStageMouseLeave(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TMainForm::pbStageGesture(
+    TObject *Sender,
+    const TGestureEventInfo &EventInfo,
+    bool &Handled
+    )
+{
+    switch (EventInfo.GestureID)
+    {
+        case igiFirst:
+        break;
+
+        case igiLast:
+        break;
+
+        case igiBegin:
+        break;
+
+        case igiEnd:
+        break;
+
+        case igiZoom:
+        break;
+
+        case igiPan:
+
+            if (EventInfo.Flags.Contains(TInteractiveGestureFlag::gfBegin))
+                FStage.HandlePanBegin(EventInfo.Location);
+            else if (EventInfo.Flags.Contains(TInteractiveGestureFlag::gfInertia))
+                FStage.HandlePanInertia(EventInfo.Location);
+            else if (EventInfo.Flags.Contains(TInteractiveGestureFlag::gfEnd))
+                FStage.HandlePanEnd(EventInfo.Location);
+
+            Handled = true;
+
+        break;
+
+        case igiRotate:
+        break;
+
+        case igiTwoFingerTap:
+        break;
+
+        case igiPressAndTap:
+            FStage.HandlePressAndTap(EventInfo.Location);
+        break;
+
+        case igiLongTap:
+            FStage.HandleLongTap(EventInfo.Location);
+        break;
+
+        case igiDoubleTap:
+        break;
+    }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TMainForm::FormKeyDown(
+    TObject *Sender,
+    WORD &Key,
+    System::WideChar &KeyChar,
+    TShiftState Shift
+    )
+{
+#ifdef _DEBUG
+    switch (KeyChar)
+    {
+        case L' ':
+            FStage.HandleLongTap(ScreenToClient(Screen->MousePos()));
+        break;
+
+        case L'q':
+            if (!FIsPanning)
+            {
+                FIsPanning = true;
+                FStage.HandlePanBegin(ScreenToClient(Screen->MousePos()));
+            }
+            else
+            {
+                FStage.HandlePanInertia(ScreenToClient(Screen->MousePos()));
+            }
+
+        break;
+    }
+#endif
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TMainForm::FormKeyUp(
+    TObject *Sender,
+    WORD &Key,
+    System::WideChar &KeyChar,
+    TShiftState Shift
+    )
+{
+#ifdef _DEBUG
+    switch (KeyChar)
+    {
+        case L' ':
+        break;
+
+        case L'q':
+            FIsPanning = false;
+            FStage.HandlePanEnd(ScreenToClient(Screen->MousePos()));
+        break;
+    }
+#endif
+}
+//---------------------------------------------------------------------------
 
